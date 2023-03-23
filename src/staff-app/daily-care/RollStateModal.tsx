@@ -1,14 +1,14 @@
 import { Box, Button, Dialog, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from "@material-ui/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./roll-state.css";
 
 interface IProps{
   open: boolean;
   onSubmit: (value: string) => void;
+  defaultValue: string;
 }
-function RollStateModel({ open, onSubmit }: IProps) {
+function RollStateModel({ open, onSubmit, defaultValue }: IProps) {
   const [studentState, setStudentState] = useState(""); 
-  
   const onHandleChange = (value: string) => {
     if (value) {
       setStudentState(value)
@@ -17,7 +17,6 @@ function RollStateModel({ open, onSubmit }: IProps) {
 
   const onHandleSubmit = () => {
     if (studentState) {
-      // close the Modal & set the state of student
       onSubmit(studentState);
     }
   }
@@ -37,7 +36,7 @@ function RollStateModel({ open, onSubmit }: IProps) {
             </FormLabel>
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="female"
+              defaultValue={defaultValue}
               name="radio-buttons-group"
               onChange={(e) => {
                 onHandleChange(e.target.value)

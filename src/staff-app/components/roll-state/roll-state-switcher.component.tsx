@@ -43,7 +43,7 @@ export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark", si
   return (
     <>
       <RollStateIcon type={rollState} size={size} onClick={onClick}  />
-      <RollStateModel open={open} onSubmit={onSubmit} />
+      {open && <RollStateModel open={open} onSubmit={onSubmit} defaultValue={rollState} />}
     </>
   )
 }

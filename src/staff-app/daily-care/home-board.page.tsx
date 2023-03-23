@@ -97,7 +97,7 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   const { onItemClick, handleSearch } = props
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")}>First Name 1</div>
+      <div onClick={() => onItemClick("sort")}>First Name</div>
       <div>
       <TextField
         size="small"
