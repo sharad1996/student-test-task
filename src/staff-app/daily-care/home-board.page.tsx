@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import Button from "@material-ui/core/ButtonBase"
-import { Typography, Box, Paper, Backdrop, TextField , Dialog, DialogTitle, } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
@@ -11,7 +11,7 @@ import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import AppProvider from "providers/AppProvider"
-import RollStateModel from "./RollStateModal";
+
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [students, setStudents] = useState<any>([]);
@@ -44,7 +44,16 @@ export const HomeBoardPage: React.FC = () => {
   }
   
   const handleSearch = (searchText: string) => {
-    console.log("Search ===",searchText)
+    const filteredStudents = students.filter(student => {
+      if (student.first_name.toLocaleLowerCase().includes(searchText)) {
+        return student;
+      }
+    })
+    if (searchText === "") {
+      setStudents(data?.students)
+    } else {
+      setStudents(filteredStudents);
+    }
   }
 
   const updateStudentState = (studentID, state) => {
@@ -54,15 +63,13 @@ export const HomeBoardPage: React.FC = () => {
       }
       return student;
     });
-    debugger
+
     setStudents(updatedStudent);
   }
-
   return (
     <AppProvider data={{students, updateStudentState}}>
       <S.PageContainer>
         <Toolbar onItemClick={onToolbarAction} handleSearch={handleSearch} />
-        {/* <RollStateModel onSubmit={} open={} /> */}
         {loadState === "loading" && (
           <CenteredContainer>
             <FontAwesomeIcon icon="spinner" size="2x" spin />
@@ -71,7 +78,7 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && data?.students && (
           <>
-            {data.students.map((s) => (
+            {students.map((s) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
             ))}
           </>
