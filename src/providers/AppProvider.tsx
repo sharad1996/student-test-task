@@ -1,10 +1,5 @@
 import React from 'react';
-
-interface Student {
-  id: number;
-  first_name: string;
-  last_name: string;
-}
+import { Student } from 'utils/types';
 export interface IApp {
   students: Array <Student>;
   updateStudentState: (studentID: number | string, state: string) => void;

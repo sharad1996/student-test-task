@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import Button from "@material-ui/core/ButtonBase"
-import { TextField } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Spacing, BorderRadius, FontWeight } from "shared/styles/styles"
 import { Colors } from "shared/styles/colors"
@@ -12,11 +12,13 @@ import { StudentListTile } from "staff-app/components/student-list-tile/student-
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import AppProvider from "providers/AppProvider"
 import { dynamicAscendingSort, dynamicDescendingSort } from "utils";
+import { Student } from 'utils/types';
+import "./home-board.css";
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [students, setStudents] = useState<any>([]);
-  const [sorting, setSorting] = useState({
+  const [sorting, setSorting] = useState<any>({
     firstName: { isAccending: true, name:  'first_name'},
     lastName: { isAccending: true, name: 'last_name'}
   })
@@ -44,7 +46,7 @@ export const HomeBoardPage: React.FC = () => {
     return students.sort(dynamicDescendingSort(sorting[sortFieldName].name));
   }
 
-  const onToolbarAction = (action: ToolbarAction, sortFieldName?: string) => {
+  const onToolbarAction = (action: ToolbarAction, sortFieldName: string = "") => {
 
     if (action === "roll") {
       setIsRollMode(true)
@@ -56,7 +58,7 @@ export const HomeBoardPage: React.FC = () => {
         const updateSorting = {...sorting, [sortFieldName]: {...sorting[sortFieldName], isAccending: false} };
         setSorting(updateSorting);
       } else {
-        const sortedData = getAscendingOrder(sortFieldName);
+        const sortedData = getAscendingOrder(sortFieldName || "");
         setStudents(sortedData);
         const updateSorting = {...sorting, [sortFieldName]: {...sorting[sortFieldName], isAccending: true} };
         setSorting(updateSorting);
@@ -71,7 +73,7 @@ export const HomeBoardPage: React.FC = () => {
   }
   
   const handleSearch = (searchText: string) => {
-    const filteredStudents = students.filter(student => {
+    const filteredStudents = students.filter((student: Student) => {
       if (student.first_name.toLocaleLowerCase().includes(searchText) || student.last_name.toLocaleLowerCase().includes(searchText)) {
         return student;
       }
@@ -83,8 +85,8 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
-  const updateStudentState = (studentID, state) => {
-    const updatedStudent = students.map(student => {
+  const updateStudentState = (studentID: number | string, state: string) => {
+    const updatedStudent = students.map((student: Student) => {
       if (student.id === studentID) {
         student["state"] = state;
       }
@@ -105,7 +107,7 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && students && (
           <>
-            {students.map((s) => (
+            {students.map((s: Student) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
             ))}
           </>
@@ -131,7 +133,22 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   const { onItemClick, handleSearch } = props
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort", "firstName")}>First Name</div>
+      <Box onClick={() => onItemClick("sort", "firstName")}  className="sorting">
+        <Box component="span">First Name</Box>
+        <Box
+          component="img"
+          src="https://www.pngkit.com/png/full/456-4560379_sort-up-and-down-arrows-couple-comments-sort.png"
+          className="sorting-img"
+        />
+      </Box>
+      <Box onClick={() => onItemClick("sort", "lastName")}  className="sorting">
+        <Box component="span">Last Name</Box>
+        <Box
+          component="img"
+          src="https://www.pngkit.com/png/full/456-4560379_sort-up-and-down-arrows-couple-comments-sort.png"
+          className="sorting-img"
+        />
+      </Box>
       <div>
       <TextField
         size="small"
