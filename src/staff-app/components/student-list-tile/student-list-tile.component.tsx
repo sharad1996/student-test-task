@@ -12,7 +12,7 @@ interface Props {
   student: Person
 }
 export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
-  const { students, updateStudentState } = useContext(AppContext) as IApp;
+  const { updateStudentState } = useContext(AppContext) as IApp;
   const [initialState, setInitialState] = useState("late");
   const onStateChange = (value: string) => {
     setInitialState(value);

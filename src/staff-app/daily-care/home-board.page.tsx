@@ -11,10 +11,15 @@ import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import AppProvider from "providers/AppProvider"
+import { dynamicAscendingSort, dynamicDescendingSort } from "utils";
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [students, setStudents] = useState<any>([]);
+  const [sorting, setSorting] = useState({
+    firstName: { isAccending: true, name:  'first_name'},
+    lastName: { isAccending: true, name: 'last_name'}
+  })
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
 
   useEffect(() => {
@@ -31,9 +36,31 @@ export const HomeBoardPage: React.FC = () => {
     }
   }, [data])
 
-  const onToolbarAction = (action: ToolbarAction) => {
+  const getAscendingOrder = (sortFieldName: string) => {
+    return students.sort(dynamicAscendingSort(sorting[sortFieldName].name));
+  }
+
+  const getDescendingOrder = (sortFieldName: string) => {
+    return students.sort(dynamicDescendingSort(sorting[sortFieldName].name));
+  }
+
+  const onToolbarAction = (action: ToolbarAction, sortFieldName?: string) => {
+
     if (action === "roll") {
       setIsRollMode(true)
+    }
+    if (action === "sort") {
+      if (sortFieldName && sorting[sortFieldName].isAccending) {
+        const sortedData = getDescendingOrder(sortFieldName);
+        setStudents(sortedData)
+        const updateSorting = {...sorting, [sortFieldName]: {...sorting[sortFieldName], isAccending: false} };
+        setSorting(updateSorting);
+      } else {
+        const sortedData = getAscendingOrder(sortFieldName);
+        setStudents(sortedData);
+        const updateSorting = {...sorting, [sortFieldName]: {...sorting[sortFieldName], isAccending: true} };
+        setSorting(updateSorting);
+      }
     }
   }
 
@@ -45,7 +72,7 @@ export const HomeBoardPage: React.FC = () => {
   
   const handleSearch = (searchText: string) => {
     const filteredStudents = students.filter(student => {
-      if (student.first_name.toLocaleLowerCase().includes(searchText)) {
+      if (student.first_name.toLocaleLowerCase().includes(searchText) || student.last_name.toLocaleLowerCase().includes(searchText)) {
         return student;
       }
     })
@@ -76,7 +103,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && (
+        {loadState === "loaded" && students && (
           <>
             {students.map((s) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
@@ -104,7 +131,7 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   const { onItemClick, handleSearch } = props
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")}>First Name</div>
+      <div onClick={() => onItemClick("sort", "firstName")}>First Name</div>
       <div>
       <TextField
         size="small"
