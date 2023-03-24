@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
+import { useNavigate } from "react-router";
 import styled from "styled-components"
 import Button from "@material-ui/core/ButtonBase"
 import { Box, TextField } from '@material-ui/core';
@@ -10,19 +11,21 @@ import { Person } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
-import AppProvider from "providers/AppProvider"
+import AppProvider, { AppContext, IApp } from "providers/AppProvider"
 import { dynamicAscendingSort, dynamicDescendingSort } from "utils";
 import { Student } from 'utils/types';
 import "./home-board.css";
 
 export const HomeBoardPage: React.FC = () => {
+  const history = useNavigate();
   const [isRollMode, setIsRollMode] = useState(false)
-  const [students, setStudents] = useState<any>([]);
+  // const [students, setStudents] = useState<any>([]);
   const [sorting, setSorting] = useState<any>({
     firstName: { isAccending: true, name:  'first_name'},
     lastName: { isAccending: true, name: 'last_name'}
   })
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+  const { students, updateStudents  } = useContext(AppContext) as IApp;
 
   useEffect(() => {
     void getStudents()
@@ -34,7 +37,7 @@ export const HomeBoardPage: React.FC = () => {
         student["state"] = "unmark"
         return student;
       }) 
-      setStudents(studentWithInitialState);
+      updateStudents(studentWithInitialState);
     }
   }, [data])
 
@@ -54,12 +57,12 @@ export const HomeBoardPage: React.FC = () => {
     if (action === "sort") {
       if (sortFieldName && sorting[sortFieldName].isAccending) {
         const sortedData = getDescendingOrder(sortFieldName);
-        setStudents(sortedData)
+        updateStudents(sortedData)
         const updateSorting = {...sorting, [sortFieldName]: {...sorting[sortFieldName], isAccending: false} };
         setSorting(updateSorting);
       } else {
         const sortedData = getAscendingOrder(sortFieldName || "");
-        setStudents(sortedData);
+        updateStudents(sortedData);
         const updateSorting = {...sorting, [sortFieldName]: {...sorting[sortFieldName], isAccending: true} };
         setSorting(updateSorting);
       }
@@ -70,6 +73,9 @@ export const HomeBoardPage: React.FC = () => {
     if (action === "exit") {
       setIsRollMode(false)
     }
+    if (action === "complete") {
+      history("/staff/activity")
+    }
   }
   
   const handleSearch = (searchText: string) => {
@@ -79,24 +85,14 @@ export const HomeBoardPage: React.FC = () => {
       }
     })
     if (searchText === "") {
-      setStudents(data?.students)
+      updateStudents(data?.students)
     } else {
-      setStudents(filteredStudents);
+      updateStudents(filteredStudents);
     }
   }
 
-  const updateStudentState = (studentID: number | string, state: string) => {
-    const updatedStudent = students.map((student: Student) => {
-      if (student.id === studentID) {
-        student["state"] = state;
-      }
-      return student;
-    });
-
-    setStudents(updatedStudent);
-  }
   return (
-    <AppProvider data={{students, updateStudentState}}>
+    <>
       <S.PageContainer>
         <Toolbar onItemClick={onToolbarAction} handleSearch={handleSearch} />
         {loadState === "loading" && (
@@ -120,7 +116,7 @@ export const HomeBoardPage: React.FC = () => {
         )}
       </S.PageContainer>
       <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} />
-    </AppProvider>
+    </>
   )
 }
 

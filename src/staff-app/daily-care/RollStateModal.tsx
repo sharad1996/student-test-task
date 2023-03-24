@@ -8,7 +8,7 @@ interface IProps{
   defaultValue: string;
 }
 function RollStateModel({ open, onSubmit, defaultValue }: IProps) {
-  const [studentState, setStudentState] = useState(""); 
+  const [studentState, setStudentState] = useState(defaultValue); 
   const onHandleChange = (value: string) => {
     if (value) {
       setStudentState(value)
@@ -48,7 +48,7 @@ function RollStateModel({ open, onSubmit, defaultValue }: IProps) {
             </RadioGroup>
           </FormControl>
         </Box>
-        <Button  onClick={onHandleSubmit} variant="contained" fullWidth={true}>submit</Button>
+        <Button color="primary" onClick={onHandleSubmit} variant="contained" fullWidth={true}>submit</Button>
       </Box>
     </Dialog>
    );

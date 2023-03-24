@@ -6,9 +6,10 @@ import RollStateModel from "staff-app/daily-care/RollStateModal"
 interface Props {
   initialState?: RolllStateType
   size?: number
-  onStateChange?: (newState: RolllStateType) => void
+  onStateChange?: (newState: RolllStateType) => void;
+  onlyList?: boolean;
 }
-export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark", size = 40, onStateChange }) => {
+export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark", size = 40, onStateChange, onlyList }) => {
   const [rollState, setRollState] = useState(initialState)
   const [open, setOpen] = useState(false)
 
@@ -25,12 +26,7 @@ export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark", si
   }, [initialState])
 
   const onClick = () => {
-    // const next = nextState()
-    // setRollState(next)
-    // if (onStateChange) {
-    //   onStateChange(next)
-    // }
-    setOpen(true);
+    setOpen(!onlyList);
   }
 
   const onSubmit = (value: string) => {

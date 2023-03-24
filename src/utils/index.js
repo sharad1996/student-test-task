@@ -29,3 +29,15 @@ export function dynamicDescendingSort(property) {
       return result * sortOrder;
   }
 }
+
+export const getStudentList = (state, students) => {
+  if (state === "all") return students.length;
+  if (students.length) {
+    return students.filter(student => student?.state === state)?.length
+  }
+  return 0;
+}
+
+export const filterStudentBasedOnState = (students, state) => {
+  return students.filter(student => student.state === state)
+}

@@ -10,8 +10,9 @@ import { RollStateSwitcher } from "staff-app/components/roll-state/roll-state-sw
 interface Props {
   isRollMode?: boolean
   student: Person
+  onlyList?: boolean; 
 }
-export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
+export const StudentListTile: React.FC<Props> = ({ isRollMode, student, onlyList }) => {
   const { updateStudentState } = useContext(AppContext) as IApp;
   const [initialState, setInitialState] = useState("late");
   const onStateChange = (value: string) => {
@@ -27,7 +28,7 @@ export const StudentListTile: React.FC<Props> = ({ isRollMode, student }) => {
       </S.Content>
       {isRollMode && (
         <S.Roll>
-          <RollStateSwitcher onStateChange={onStateChange} initialState={initialState} />
+          <RollStateSwitcher onStateChange={onStateChange} initialState={student?.state} onlyList={onlyList} />
         </S.Roll>
       )}
     </S.Container>
