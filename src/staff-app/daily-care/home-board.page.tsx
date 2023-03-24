@@ -11,20 +11,20 @@ import { Person } from "shared/models/person"
 import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
-import AppProvider, { AppContext, IApp } from "providers/AppProvider"
+import { AppContext, IApp } from "providers/AppProvider"
 import { dynamicAscendingSort, dynamicDescendingSort } from "utils";
 import { Student } from 'utils/types';
-import "./home-board.css";
+import useStyles from "./Style";
 
 export const HomeBoardPage: React.FC = () => {
   const history = useNavigate();
   const [isRollMode, setIsRollMode] = useState(false)
-  // const [students, setStudents] = useState<any>([]);
   const [sorting, setSorting] = useState<any>({
     firstName: { isAccending: true, name:  'first_name'},
     lastName: { isAccending: true, name: 'last_name'}
   })
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+  const [saveStudents, saveData] = useApi<{ students: Person[] }>({ url: "save-roll" })
   const { students, updateStudents  } = useContext(AppContext) as IApp;
 
   useEffect(() => {
@@ -40,6 +40,12 @@ export const HomeBoardPage: React.FC = () => {
       updateStudents(studentWithInitialState);
     }
   }, [data])
+
+  useEffect(() => {
+    if (saveData?.success) {
+      history("/staff/activity")
+    }
+  }, [saveData])
 
   const getAscendingOrder = (sortFieldName: string) => {
     return students.sort(dynamicAscendingSort(sorting[sortFieldName].name));
@@ -74,7 +80,15 @@ export const HomeBoardPage: React.FC = () => {
       setIsRollMode(false)
     }
     if (action === "complete") {
-      history("/staff/activity")
+      const updateStudents = JSON.parse(JSON.stringify(students)).map((student: Student) => {
+        student["student_id"] = student.id;
+        student["roll_state"] = student.state;
+
+        delete student.id;
+        delete student.state;
+        return student;
+      });
+      void saveStudents({ student_roll_states: updateStudents })
     }
   }
   
@@ -90,7 +104,6 @@ export const HomeBoardPage: React.FC = () => {
       updateStudents(filteredStudents);
     }
   }
-
   return (
     <>
       <S.PageContainer>
@@ -127,22 +140,24 @@ interface ToolbarProps {
 }
 const Toolbar: React.FC<ToolbarProps> = (props) => {
   const { onItemClick, handleSearch } = props
+  const styles = useStyles();
+
   return (
     <S.ToolbarContainer>
-      <Box onClick={() => onItemClick("sort", "firstName")}  className="sorting">
+      <Box onClick={() => onItemClick("sort", "firstName")}  className={styles.sorting}>
         <Box component="span">First Name</Box>
         <Box
           component="img"
           src="https://www.pngkit.com/png/full/456-4560379_sort-up-and-down-arrows-couple-comments-sort.png"
-          className="sorting-img"
+          className={styles.sortingImg}
         />
       </Box>
-      <Box onClick={() => onItemClick("sort", "lastName")}  className="sorting">
+      <Box onClick={() => onItemClick("sort", "lastName")}  className={styles.sorting}>
         <Box component="span">Last Name</Box>
         <Box
           component="img"
           src="https://www.pngkit.com/png/full/456-4560379_sort-up-and-down-arrows-couple-comments-sort.png"
-          className="sorting-img"
+          className={styles.sortingImg}
         />
       </Box>
       <Box>
@@ -150,10 +165,10 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
           size="small"
           variant="outlined"
           onChange={(e) => handleSearch(e.target.value)}
-          className="search-input"
+          className={styles.searchInput}
           placeholder="Search..."
           InputProps={{
-            className:"input-field",
+            className: styles.inputField,
           }}
         />
       </Box>

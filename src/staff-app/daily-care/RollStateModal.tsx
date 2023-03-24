@@ -1,6 +1,6 @@
-import { Box, Button, Dialog, DialogTitle, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from "@material-ui/core";
-import { useEffect, useState } from "react";
-import "./roll-state.css";
+import { Box, Button, Dialog, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from "@material-ui/core";
+import { useState } from "react";
+import useStyles from './Style';
 
 interface IProps{
   open: boolean;
@@ -8,6 +8,7 @@ interface IProps{
   defaultValue: string;
 }
 function RollStateModel({ open, onSubmit, defaultValue }: IProps) {
+  const style: any = useStyles();
   const [studentState, setStudentState] = useState(defaultValue); 
   const onHandleChange = (value: string) => {
     if (value) {
@@ -23,7 +24,7 @@ function RollStateModel({ open, onSubmit, defaultValue }: IProps) {
 
   return (
     <Dialog open={open} maxWidth="lg">
-      <Box sx={{ minWidth: 200}} className="dialog-wrapper">
+      <Box sx={{ minWidth: 200}} className={style.dialogWrapper}>
         <Box>
           <FormControl>
             <FormLabel id="demo-radio-buttons-group-label">

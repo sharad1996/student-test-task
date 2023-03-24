@@ -9,7 +9,7 @@ import { RollStateList } from "staff-app/components/roll-state/roll-state-list.c
 import { filterStudentBasedOnState, getStudentList } from "utils";
 
 export const ActivityPage: React.FC = () => {
-  const { students, updateStudents  } = useContext(AppContext) as IApp;
+  const { students  } = useContext(AppContext) as IApp;
   const [allStudents, setAllStudents] = useState<any>([]);
   useEffect(() => {
     setAllStudents(students);
