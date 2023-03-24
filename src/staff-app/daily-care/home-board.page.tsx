@@ -149,13 +149,18 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
           className="sorting-img"
         />
       </Box>
-      <div>
-      <TextField
-        size="small"
-        variant="standard"
-        onChange={(e) => handleSearch(e.target.value)}
-      />
-      </div>
+      <Box>
+        <TextField
+          size="small"
+          variant="outlined"
+          onChange={(e) => handleSearch(e.target.value)}
+          className="search-input"
+          placeholder="Search..."
+          InputProps={{
+            className:"input-field",
+          }}
+        />
+      </Box>
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
   )

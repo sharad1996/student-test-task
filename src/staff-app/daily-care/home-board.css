@@ -8,3 +8,15 @@
 .sorting-img {
   width: 10px
 }
+
+.search-input {
+  color: 'red';
+  padding: 20px;
+}
+
+.input-field { 
+  text-align: center;
+  color:#000 !important;
+  border-radius: 100px;
+  background: #fff;
+}
